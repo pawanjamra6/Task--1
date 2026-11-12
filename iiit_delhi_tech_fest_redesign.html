@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESYA '25 - Technomancy | IIIT Delhi Tech Fest</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Orbitron:wght@400;600;800;900&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            black: '#070913',
+                            dark: '#0d111d',
+                            card: 'rgba(16, 22, 40, 0.75)',
+                            cyan: '#00f3ff',
+                            magenta: '#ff0055',
+                            purple: '#8a2be2',
+                            neonGreen: '#00ff66',
+                            border: 'rgba(0, 243, 255, 0.25)'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                        rajdhani: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #070913;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #00f3ff22;
+            border-radius: 4px;
+            border: 1px solid #00f3ff;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00f3ff66;
+        }
+
+        /* Scanline Overlay */
+        .scanline-bg {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Glowing Text & Border Effects */
+        .glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.7), 0 0 20px rgba(0, 243, 255, 0.4);
+        }
+        .glow-magenta {
+            text-shadow: 0 0 10px rgba(255, 0, 85, 0.7), 0 0 20px rgba(255, 0, 85, 0.4);
+        }
+        .box-glow-cyan {
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.25), inset 0 0 15px rgba(0, 243, 255, 0.1);
+        }
+        .box-glow-magenta {
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.25), inset 0 0 15px rgba(255, 0, 85, 0.1);
+        }
+
+        /* Parallax Cyber Grid Ground */
+        .grid-floor {
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background-image: 
+                linear-gradient(to right, rgba(0, 243, 255, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 243, 255, 0.08) 1px, transparent 1px);
+            background-size: 50px 50px;
+            transform: perspective(600px) rotateX(60deg);
+            animation: gridMove 20s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+        @keyframes gridMove {
+            0% { transform: perspective(600px) rotateX(60deg) translateY(0); }
+            100% { transform: perspective(600px) rotateX(60deg) translateY(50px); }
+        }
+
+        /* Glitch Animation */
+        .glitch {
+            position: relative;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip: rect(0, 0, 0, 0);
+        }
+        .glitch::before {
+            left: -2px;
+            text-shadow: 2px 0 #ff0055;
+            animation: glitch-anim 2.5s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: 2px;
+            text-shadow: -2px 0 #00f3ff;
+            animation: glitch-anim2 1.5s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 44px, 0); }
+            20% { clip: rect(70px, 9999px, 12px, 0); }
+            40% { clip: rect(30px, 9999px, 80px, 0); }
+            60% { clip: rect(85px, 9999px, 5px, 0); }
+            80% { clip: rect(15px, 9999px, 60px, 0); }
+            100% { clip: rect(50px, 9999px, 30px, 0); }
+        }
+        @keyframes glitch-anim2 {
+            0% { clip: rect(60px, 9999px, 10px, 0); }
+            25% { clip: rect(20px, 9999px, 75px, 0); }
+            50% { clip: rect(90px, 9999px, 35px, 0); }
+            75% { clip: rect(40px, 9999px, 55px, 0); }
+            100% { clip: rect(5px, 9999px, 95px, 0); }
+        }
+
+        /* 3D Tilt Card Container */
+        .tilt-card-wrapper {
+            perspective: 1000px;
+        }
+        .tilt-card {
+            transition: transform 0.15s ease-out, box-shadow 0.2s ease;
+            transform-style: preserve-3d;
+        }
+
+        /* Clip path Cyber Corners */
+        .cyber-corner {
+            clip-path: polygon(
+                0 0, 
+                calc(100% - 15px) 0, 100% 15px, 
+                100% 100%, 
+                15px 100%, 0 calc(100% - 15px)
+            );
+        }
+        .cyber-corner-lg {
+            clip-path: polygon(
+                0 0, 
+                calc(100% - 30px) 0, 100% 30px, 
+                100% 100%, 
+                30px 100%, 0 calc(100% - 30px)
+            );
+        }
+    </style>
+</head>
+<body class="bg-cyber-black text-slate-100 font-rajdhani selection:bg-cyber-cyan selection:text-black overflow-x-hidden relative">
+
+    <!-- Ambient Grid Canvas Background -->
+    <div class="fixed inset-0 z-0 opacity-40 grid-floor"></div>
+    <div class="fixed inset-0 z-10 scanline-bg opacity-30"></div>
+    <canvas id="particlesCanvas" class="fixed inset-0 pointer-events-none z-0"></canvas>
+
+    <!-- Header Navigation -->
+    <header class="fixed top-0 left-0 w-full z-50 bg-cyber-black/80 backdrop-blur-md border-b border-cyber-cyan/20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <!-- Brand Logo -->
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 rounded-lg bg-cyber-dark border border-cyber-cyan flex items-center justify-center font-orbitron font-black text-cyber-cyan group-hover:bg-cyber-cyan group-hover:text-black transition-all duration-300 shadow-[0_0_15px_rgba(0,243,255,0.4)]">
+                    E
+                </div>
+                <div>
+                    <span class="font-orbitron font-black text-2xl tracking-widest text-white glitch" data-text="ESYA'25">ESYA'25</span>
+                    <span class="text-xs block text-cyber-cyan font-mono tracking-wider">IIIT DELHI TECH FEST</span>
+                </div>
+            </a>
+
+            <!-- Nav Links -->
+            <nav class="hidden md:flex items-center space-x-8 font-mono text-sm tracking-wider">
+                <a href="#hero" class="text-cyber-cyan hover:text-white transition-colors flex items-center gap-2">
+                    <span class="text-cyber-magenta">&gt;</span> //HERO
+                </a>
+                <a href="#events" class="text-slate-400 hover:text-cyber-cyan transition-colors flex items-center gap-2">
+                    <span class="text-cyber-magenta">&gt;</span> //EVENTS
+                </a>
+                <a href="#submission-info" class="text-slate-400 hover:text-cyber-cyan transition-colors flex items-center gap-2">
+                    <span class="text-cyber-magenta">&gt;</span> //GIT_REPOS
+                </a>
+            </nav>
+
+            <!-- Action Tag Button -->
+            <div class="flex items-center gap-4">
+                <a href="#terminal" onclick="executeQuickCmd('register')" class="cyber-corner bg-gradient-to-r from-cyber-cyan to-blue-600 hover:from-cyber-magenta hover:to-purple-600 text-black hover:text-white font-orbitron font-bold text-xs uppercase px-5 py-2.5 transition-all duration-300 shadow-[0_0_20px_rgba(0,243,255,0.4)] flex items-center gap-2">
+                    <i class="fa-solid fa-terminal"></i> Enter Grid
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="relative z-20 pt-20">
+
+        <!-- ========================================================= -->
+        <!-- COMPONENT 1: 3D CYBER-TERMINAL LANDING HERO              -->
+        <!-- ========================================================= -->
+        <section id="hero" class="min-h-screen relative flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+            <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+
+                <!-- Left Column: Branding & Terminal -->
+                <div class="lg:col-span-7 space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyber-cyan/10 border border-cyber-cyan/40 text-cyber-cyan font-mono text-xs tracking-widest">
+                        <span class="w-2 h-2 rounded-full bg-cyber-neonGreen animate-ping"></span>
+                        SYSTEM ONLINE :: TECHNOMANCY EDITION
+                    </div>
+
+                    <h1 class="text-4xl sm:text-6xl xl:text-7xl font-orbitron font-black text-white leading-none tracking-tight">
+                        MAGIC MEETS <br>
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyber-cyan via-purple-400 to-cyber-magenta glow-cyan">
+                            SYNTAX & CODE
+                        </span>
+                    </h1>
+
+                    <p class="text-slate-300 text-base sm:text-lg max-w-2xl font-mono">
+                        Experience IIIT Delhi’s flagship annual tech fest. Step inside the cybernetic realm where algorithmic wizardry and futuristic hardware collide.
+                    </p>
+
+                    <!-- Countdown Timer Flip Display -->
+                    <div class="py-2">
+                        <div class="text-xs font-mono text-cyber-cyan uppercase tracking-widest mb-2 flex items-center gap-2">
+                            <i class="fa-regular fa-clock"></i> Fest Ignition Countdown
+                        </div>
+                        <div class="grid grid-cols-4 gap-3 max-w-md" id="countdown">
+                            <div class="bg-cyber-dark/80 border border-cyber-cyan/30 rounded-lg p-3 text-center box-glow-cyan">
+                                <span id="cd-days" class="font-orbitron font-bold text-2xl sm:text-3xl text-cyber-cyan block">00</span>
+                                <span class="text-[10px] font-mono text-slate-400 uppercase">Days</span>
+                            </div>
+                            <div class="bg-cyber-dark/80 border border-cyber-cyan/30 rounded-lg p-3 text-center box-glow-cyan">
+                                <span id="cd-hours" class="font-orbitron font-bold text-2xl sm:text-3xl text-white block">00</span>
+                                <span class="text-[10px] font-mono text-slate-400 uppercase">Hours</span>
+                            </div>
+                            <div class="bg-cyber-dark/80 border border-cyber-cyan/30 rounded-lg p-3 text-center box-glow-cyan">
+                                <span id="cd-mins" class="font-orbitron font-bold text-2xl sm:text-3xl text-white block">00</span>
+                                <span class="text-[10px] font-mono text-slate-400 uppercase">Mins</span>
+                            </div>
+                            <div class="bg-cyber-dark/80 border border-cyber-magenta/30 rounded-lg p-3 text-center box-glow-magenta">
+                                <span id="cd-secs" class="font-orbitron font-bold text-2xl sm:text-3xl text-cyber-magenta block">00</span>
+                                <span class="text-[10px] font-mono text-slate-400 uppercase">Secs</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Cyber Terminal Box -->
+                    <div id="terminal" class="bg-cyber-dark/95 border border-cyber-cyan/40 rounded-xl overflow-hidden shadow-2xl backdrop-blur-md">
+                        <div class="bg-slate-950/80 px-4 py-2 border-b border-cyber-cyan/20 flex items-center justify-between">
+                            <div class="flex items-center space-x-2">
+                                <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-yellow-500/80"></div>
+                                <div class="w-3 h-3 rounded-full bg-green-500/80"></div>
+                                <span class="text-xs font-mono text-slate-400 ml-2">esya-terminal@iiitd-node:~</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-cyber-cyan bg-cyber-cyan/10 px-2 py-0.5 rounded border border-cyber-cyan/30">v4.0.2</span>
+                        </div>
+                        
+                        <div class="p-4 font-mono text-xs sm:text-sm h-48 overflow-y-auto space-y-2 text-slate-300" id="terminal-body">
+                            <div><span class="text-cyber-neonGreen">system@esya:~$</span> Welcome to ESYA '25 Technomancy Terminal Simulator.</div>
+                            <div>Type <span class="text-cyber-cyan cursor-pointer underline" onclick="executeQuickCmd('help')">'help'</span> to inspect available commands or click tags below.</div>
+                        </div>
+
+                        <!-- Terminal Command Chips -->
+                        <div class="p-3 bg-slate-950/60 border-t border-cyber-cyan/20 flex flex-wrap gap-2 items-center">
+                            <span class="text-[11px] font-mono text-slate-400 mr-1">QUICK CMDS:</span>
+                            <button onclick="executeQuickCmd('help')" class="px-2.5 py-1 bg-cyber-cyan/10 border border-cyber-cyan/40 hover:bg-cyber-cyan hover:text-black rounded text-xs font-mono text-cyber-cyan transition-all">help</button>
+                            <button onclick="executeQuickCmd('events')" class="px-2.5 py-1 bg-cyber-cyan/10 border border-cyber-cyan/40 hover:bg-cyber-cyan hover:text-black rounded text-xs font-mono text-cyber-cyan transition-all">events</button>
+                            <button onclick="executeQuickCmd('status')" class="px-2.5 py-1 bg-cyber-cyan/10 border border-cyber-cyan/40 hover:bg-cyber-cyan hover:text-black rounded text-xs font-mono text-cyber-cyan transition-all">status</button>
+                            <button onclick="executeQuickCmd('hackathon')" class="px-2.5 py-1 bg-cyber-cyan/10 border border-cyber-cyan/40 hover:bg-cyber-cyan hover:text-black rounded text-xs font-mono text-cyber-cyan transition-all">hackathon</button>
+                            <button onclick="executeQuickCmd('clear')" class="px-2.5 py-1 bg-red-500/10 border border-red-500/40 hover:bg-red-500 hover:text-white rounded text-xs font-mono text-red-400 transition-all">clear</button>
+                        </div>
+
+                        <!-- Terminal Input Bar -->
+                        <form id="terminal-form" class="flex border-t border-cyber-cyan/20 bg-slate-950/90">
+                            <span class="px-3 py-2 text-cyber-neonGreen font-mono text-sm self-center">&gt;</span>
+                            <input type="text" id="terminal-input" autocomplete="off" class="w-full bg-transparent px-2 py-2.5 font-mono text-sm text-white focus:outline-none placeholder-slate-600" placeholder="Type command here... (try 'help')">
+                            <button type="submit" class="px-4 text-cyber-cyan hover:text-white font-mono text-xs">RUN</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Right Column: 3D Interactive Feature Badge / Card -->
+                <div class="lg:col-span-5 flex justify-center">
+                    <div class="tilt-card-wrapper w-full max-w-md">
+                        <div id="hero-3d-card" class="tilt-card cyber-corner-lg bg-cyber-card border-2 border-cyber-cyan/50 p-6 relative group backdrop-blur-xl shadow-[0_0_30px_rgba(0,243,255,0.2)]">
+                            <!-- Glow background element -->
+                            <div class="absolute inset-0 bg-gradient-to-br from-cyber-cyan/10 via-transparent to-cyber-magenta/10 rounded-xl pointer-events-none"></div>
+
+                            <div class="flex justify-between items-start mb-6">
+                                <span class="bg-cyber-magenta/20 border border-cyber-magenta text-cyber-magenta font-mono text-xs px-3 py-1 rounded-full uppercase tracking-wider font-semibold">
+                                    Flagship Hackathon
+                                </span>
+                                <div class="text-right">
+                                    <span class="text-xs font-mono text-slate-400 block">PRIZE POOL</span>
+                                    <span class="font-orbitron font-extrabold text-2xl text-cyber-cyan glow-cyan">₹2,50,000</span>
+                                </div>
+                            </div>
+
+                            <div class="my-8 text-center relative py-4">
+                                <div class="w-24 h-24 mx-auto mb-4 rounded-2xl bg-cyber-dark/80 border border-cyber-cyan flex items-center justify-center text-cyber-cyan text-4xl group-hover:scale-110 transition-transform duration-300 shadow-[0_0_20px_rgba(0,243,255,0.3)]">
+                                    <i class="fa-solid fa-laptop-code"></i>
+                                </div>
+                                <h3 class="font-orbitron font-black text-3xl text-white mb-2">HackIIITD v5.0</h3>
+                                <p class="text-xs font-mono text-slate-300 max-w-xs mx-auto">
+                                    24-Hour Non-stop algorithmic sprint building real-world AI, Web3 & Cloud solutions.
+                                </p>
+                            </div>
+
+                            <div class="space-y-3 pt-4 border-t border-cyber-cyan/20 font-mono text-xs">
+                                <div class="flex justify-between text-slate-300">
+                                    <span><i class="fa-regular fa-calendar text-cyber-cyan mr-1.5"></i> Date:</span>
+                                    <span class="text-white">Day 1 - Day 2</span>
+                                </div>
+                                <div class="flex justify-between text-slate-300">
+                                    <span><i class="fa-solid fa-users text-cyber-cyan mr-1.5"></i> Team Size:</span>
+                                    <span class="text-white">2 - 4 Members</span>
+                                </div>
+                                <div class="flex justify-between text-slate-300">
+                                    <span><i class="fa-solid fa-location-dot text-cyber-cyan mr-1.5"></i> Venue:</span>
+                                    <span class="text-white">R&D Block, IIIT Delhi</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6">
+                                <button onclick="openModal('HackIIITD v5.0')" class="w-full py-3 bg-cyber-cyan hover:bg-cyber-magenta text-black hover:text-white font-orbitron font-bold text-sm tracking-wider uppercase transition-all duration-300 cyber-corner flex items-center justify-center gap-2">
+                                    <span>Register Squad</span>
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================= -->
+        <!-- COMPONENT 2: DYNAMIC EVENT & SCHEDULE GRID               -->
+        <!-- ========================================================= -->
+        <section id="events" class="py-20 px-4 sm:px-6 lg:px-8 border-t border-cyber-cyan/20 bg-slate-950/60 relative">
+            <div class="max-w-7xl mx-auto space-y-10">
+
+                <!-- Section Header -->
+                <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
+                    <div>
+                        <div class="inline-flex items-center gap-2 text-cyber-magenta font-mono text-xs uppercase tracking-widest mb-2">
+                            <i class="fa-solid fa-bolt"></i> Technomancy Tracks
+                        </div>
+                        <h2 class="text-3xl sm:text-5xl font-orbitron font-black text-white">
+                            EVENTS & <span class="text-cyber-cyan">SCHEDULE GRID</span>
+                        </h2>
+                    </div>
+
+                    <!-- Search Input Filter -->
+                    <div class="w-full md:w-72 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                        <input type="text" id="eventSearch" oninput="filterEvents()" placeholder="Search events or tags..." class="w-full bg-cyber-dark/90 border border-cyber-cyan/30 rounded-lg pl-9 pr-4 py-2.5 text-sm font-mono text-white focus:outline-none focus:border-cyber-cyan">
+                    </div>
+                </div>
+
+                <!-- Controls Bar: Track Category Tabs & Day Selector -->
+                <div class="space-y-4">
+                    <!-- Day Switcher -->
+                    <div class="flex items-center space-x-2 border-b border-cyber-cyan/20 pb-4 overflow-x-auto">
+                        <span class="text-xs font-mono text-slate-400 mr-2 uppercase">Timeline:</span>
+                        <button onclick="setTimelineFilter('all')" class="timeline-btn px-4 py-1.5 rounded-md font-mono text-xs font-semibold bg-cyber-cyan text-black transition-all" data-timeline="all">All Days</button>
+                        <button onclick="setTimelineFilter('pre')" class="timeline-btn px-4 py-1.5 rounded-md font-mono text-xs font-semibold bg-cyber-dark/80 text-slate-300 border border-cyber-cyan/20 hover:border-cyber-cyan transition-all" data-timeline="pre">Pre-Fest</button>
+                        <button onclick="setTimelineFilter('day1')" class="timeline-btn px-4 py-1.5 rounded-md font-mono text-xs font-semibold bg-cyber-dark/80 text-slate-300 border border-cyber-cyan/20 hover:border-cyber-cyan transition-all" data-timeline="day1">Day 1</button>
+                        <button onclick="setTimelineFilter('day2')" class="timeline-btn px-4 py-1.5 rounded-md font-mono text-xs font-semibold bg-cyber-dark/80 text-slate-300 border border-cyber-cyan/20 hover:border-cyber-cyan transition-all" data-timeline="day2">Day 2</button>
+                    </div>
+
+                    <!-- Category Track Filters -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="setCategoryFilter('all')" class="category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-black transition-all" data-category="all">
+                            All Tracks
+                        </button>
+                        <button onclick="setCategoryFilter('code')" class="category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-dark/80 border border-slate-700 text-slate-300 hover:border-cyber-cyan hover:text-white transition-all" data-category="code">
+                            <i class="fa-solid fa-code text-cyber-cyan mr-1"></i> Code Sorcery
+                        </button>
+                        <button onclick="setCategoryFilter('mech')" class="category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-dark/80 border border-slate-700 text-slate-300 hover:border-cyber-cyan hover:text-white transition-all" data-category="mech">
+                            <i class="fa-solid fa-robot text-cyber-magenta mr-1"></i> Mechanomancy
+                        </button>
+                        <button onclick="setCategoryFilter('art')" class="category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-dark/80 border border-slate-700 text-slate-300 hover:border-cyber-cyan hover:text-white transition-all" data-category="art">
+                            <i class="fa-solid fa-palette text-yellow-400 mr-1"></i> Artificery
+                        </button>
+                        <button onclick="setCategoryFilter('quest')" class="category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-dark/80 border border-slate-700 text-slate-300 hover:border-cyber-cyan hover:text-white transition-all" data-category="quest">
+                            <i class="fa-solid fa-gamepad text-cyber-neonGreen mr-1"></i> Quests & Fun
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Event Dynamic Cards Grid -->
+                <div id="eventsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards are dynamically rendered by JavaScript -->
+                </div>
+
+                <!-- Empty State -->
+                <div id="noEvents" class="hidden text-center py-16 bg-cyber-dark/40 border border-cyber-cyan/20 rounded-xl">
+                    <i class="fa-solid fa-ghost text-4xl text-slate-600 mb-3"></i>
+                    <p class="font-mono text-slate-400 text-sm">No matching events found in the matrix.</p>
+                </div>
+
+            </div>
+        </section>
+
+
+        <!-- ========================================================= -->
+        <!-- SUBMISSION HELP & GIT REPOSITORY GUIDANCE HUB           -->
+        <!-- ========================================================= -->
+        <section id="submission-info" class="py-16 px-4 sm:px-6 lg:px-8 border-t border-cyber-cyan/20">
+            <div class="max-w-4xl mx-auto bg-cyber-dark/90 border border-cyber-cyan/40 rounded-2xl p-6 sm:p-8 space-y-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-cyber-magenta/20 border border-cyber-magenta flex items-center justify-center text-cyber-magenta text-xl">
+                        <i class="fa-solid fa-code-branch"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-orbitron font-bold text-xl text-white">Git Repository & Submission Walkthrough</h3>
+                        <p class="text-xs font-mono text-slate-400">Step-by-step terminal commands to commit and push this project.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 p-4 rounded-xl border border-cyber-cyan/20 font-mono text-xs text-slate-300 overflow-x-auto space-y-2">
+                    <p class="text-cyber-cyan"># 1. Initialize Git repository</p>
+                    <p class="text-slate-100">git init</p>
+                    <p class="text-cyber-cyan pt-2"># 2. Add files and make first commit</p>
+                    <p class="text-slate-100">git add index.html</p>
+                    <p class="text-slate-100">git commit -m "Redesign IIITD Esya Hero and Event Grid components"</p>
+                    <p class="text-cyber-cyan pt-2"># 3. Connect remote GitHub repository and push</p>
+                    <p class="text-slate-100">git branch -M main</p>
+                    <p class="text-slate-100">git remote add origin https://github.com/YOUR_USERNAME/iiitd-esya-redesign.git</p>
+                    <p class="text-slate-100">git push -u origin main</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- EVENT MODAL -->
+    <div id="eventModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-cyber-dark border-2 border-cyber-cyan rounded-xl max-w-xl w-full p-6 space-y-6 relative cyber-corner shadow-[0_0_40px_rgba(0,243,255,0.3)] transform scale-95 transition-transform duration-300" id="modalContainer">
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-cyber-cyan text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+
+            <div class="space-y-2">
+                <span id="modalCategory" class="text-xs font-mono px-2.5 py-1 rounded bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan uppercase">
+                    Category
+                </span>
+                <h3 id="modalTitle" class="font-orbitron font-black text-2xl sm:text-3xl text-white">Event Name</h3>
+            </div>
+
+            <p id="modalDesc" class="font-mono text-slate-300 text-sm leading-relaxed">
+                Detailed description of the event will appear here.
+            </p>
+
+            <div class="grid grid-cols-2 gap-4 bg-slate-950/60 p-4 rounded-lg border border-cyber-cyan/20 font-mono text-xs">
+                <div>
+                    <span class="text-slate-400 block">PRIZE POOL</span>
+                    <span id="modalPrize" class="text-cyber-cyan font-bold text-base">₹0</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block">TEAM SIZE</span>
+                    <span id="modalTeam" class="text-white font-bold text-base">1 Member</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block">SCHEDULE</span>
+                    <span id="modalTime" class="text-white">Day 1</span>
+                </div>
+                <div>
+                    <span class="text-slate-400 block">LOCATION</span>
+                    <span id="modalVenue" class="text-white">Main Audi, IIITD</span>
+                </div>
+            </div>
+
+            <div class="flex gap-3">
+                <button onclick="closeModal()" class="w-1/2 py-2.5 border border-slate-700 text-slate-300 font-mono text-xs uppercase hover:bg-slate-800 rounded">Close</button>
+                <button onclick="confirmRegistration()" class="w-1/2 py-2.5 bg-cyber-cyan text-black hover:bg-cyber-magenta hover:text-white font-orbitron font-bold text-xs uppercase rounded transition-all">Confirm Entry</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FOOTER -->
+    <footer class="py-8 border-t border-cyber-cyan/20 text-center font-mono text-xs text-slate-500">
+        <p>Redesign Project for IIIT Delhi Esya Tech Fest • Developed with Cyberpunk UI Tech Stack</p>
+    </footer>
+
+    <!-- INTERACTIVE JAVASCRIPT ENGINE -->
+    <script>
+        // ==========================================
+        // 1. EVENT DATA STORE
+        // ==========================================
+        const eventsData = [
+            {
+                id: 1,
+                title: "HackIIITD v5.0",
+                category: "code",
+                categoryName: "Code Sorcery",
+                timeline: "day1",
+                timelineName: "Day 1 - Day 2",
+                prize: "₹2,50,000",
+                team: "2 - 4 Members",
+                venue: "R&D Building Labs",
+                shortDesc: "24-hour hackathon solving real-world challenges in AI, Web3, and Systems.",
+                desc: "HackIIITD is the crown jewel of Esya. Participants across the country build functional prototypes within 24 hours under intense mentorship. Includes direct cash rewards and sponsor credits.",
+                tags: ["hackathon", "ai", "web3", "code"]
+            },
+            {
+                id: 2,
+                title: "RoboWars: Steel Carnage",
+                category: "mech",
+                categoryName: "Mechanomancy",
+                timeline: "day2",
+                timelineName: "Day 2",
+                prize: "₹1,20,000",
+                team: "2 - 5 Members",
+                venue: "Old Sports Complex Arena",
+                shortDesc: "Custom-built combat bots clash in a custom steel arena till destruction.",
+                desc: "Design and build wired or wireless remote-controlled bots to crush, spin, and flip opponents out of the arena in full-contact robotics combat.",
+                tags: ["combat", "robots", "hardware", "mech"]
+            },
+            {
+                id: 3,
+                title: "IPL Auction League",
+                category: "code",
+                categoryName: "Code Sorcery",
+                timeline: "day1",
+                timelineName: "Day 1",
+                prize: "₹45,000",
+                team: "1 - 3 Members",
+                venue: "C01 Auditorium",
+                shortDesc: "Strategic bidding simulation mixed with machine learning squad optimization.",
+                desc: "Step into the shoes of a franchise owner. Bid on virtual players using constrained budgets while optimizing team rating stats through a dynamic scoring algorithm.",
+                tags: ["strategy", "ipl", "bidding", "analytics"]
+            },
+            {
+                id: 4,
+                title: "Worst UI / UX Challenge",
+                category: "art",
+                categoryName: "Artificery",
+                timeline: "pre",
+                timelineName: "Pre-Fest",
+                prize: "₹30,000",
+                team: "1 - 2 Members",
+                venue: "Online Submission",
+                shortDesc: "Craft the most infuriating, hilarious, yet functionally operational user interface.",
+                desc: "Invert standard design heuristics! Create a webpage that renders standard user tasks (like filling out a form or clicking submit) near impossible through chaotic interactions.",
+                tags: ["design", "ui", "ux", "humor"]
+            },
+            {
+                id: 5,
+                title: "Cyber Escape Room",
+                category: "quest",
+                categoryName: "Quests & Fun",
+                timeline: "day1",
+                timelineName: "Day 1",
+                prize: "₹50,000",
+                team: "2 - 4 Members",
+                venue: "Library Sub-Level 2",
+                shortDesc: "Decrypt terminal ciphers and physical puzzles before time expires.",
+                desc: "Trapped inside a dark server node room, your squad has 45 minutes to solve cryptographic ciphers, bypass physical lasers, and obtain the root security key.",
+                tags: ["puzzle", "crypto", "escape", "quest"]
+            },
+            {
+                id: 6,
+                title: "Tech Got Latent",
+                category: "art",
+                categoryName: "Artificery",
+                timeline: "day2",
+                timelineName: "Day 2",
+                prize: "₹35,000",
+                team: "Solo",
+                venue: "Main Stage Ampitheater",
+                shortDesc: "Showcase quirky, unusual tech inventions and obscure geek talents.",
+                desc: "From speed-running esoteric programming languages to live hardware circuit tweaking in under 60 seconds, display your hidden tech talent to live judges.",
+                tags: ["talent", "stage", "fun", "creative"]
+            }
+        ];
+
+        let currentCategory = 'all';
+        let currentTimeline = 'all';
+
+        // ==========================================
+        // 2. RENDER & FILTER EVENTS ENGINE
+        // ==========================================
+        function renderEvents() {
+            const grid = document.getElementById('eventsGrid');
+            const noEvents = document.getElementById('noEvents');
+            const searchQuery = document.getElementById('eventSearch').value.toLowerCase();
+
+            grid.innerHTML = '';
+
+            const filtered = eventsData.filter(event => {
+                const matchCategory = currentCategory === 'all' || event.category === currentCategory;
+                const matchTimeline = currentTimeline === 'all' || event.timeline === currentTimeline;
+                const matchSearch = event.title.toLowerCase().includes(searchQuery) || 
+                                    event.shortDesc.toLowerCase().includes(searchQuery) ||
+                                    event.tags.some(t => t.includes(searchQuery));
+
+                return matchCategory && matchTimeline && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                noEvents.classList.remove('hidden');
+            } else {
+                noEvents.classList.add('hidden');
+                filtered.forEach(event => {
+                    const card = document.createElement('div');
+                    card.className = "bg-cyber-card border border-cyber-cyan/30 rounded-xl p-5 hover:border-cyber-cyan transition-all duration-300 flex flex-col justify-between group hover:shadow-[0_0_20px_rgba(0,243,255,0.25)] relative overflow-hidden";
+                    
+                    card.innerHTML = `
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-start">
+                                <span class="text-[10px] font-mono px-2.5 py-1 rounded bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan uppercase font-semibold">
+                                    ${event.categoryName}
+                                </span>
+                                <span class="text-xs font-mono text-slate-400">
+                                    <i class="fa-regular fa-clock text-cyber-magenta mr-1"></i> ${event.timelineName}
+                                </span>
+                            </div>
+
+                            <div>
+                                <h4 class="font-orbitron font-bold text-xl text-white group-hover:text-cyber-cyan transition-colors">${event.title}</h4>
+                                <p class="font-mono text-xs text-slate-300 mt-2 line-clamp-2">${event.shortDesc}</p>
+                            </div>
+                        </div>
+
+                        <div class="pt-6 mt-6 border-t border-cyber-cyan/10 flex items-center justify-between">
+                            <div>
+                                <span class="text-[10px] font-mono text-slate-400 block">PRIZE POOL</span>
+                                <span class="font-orbitron font-bold text-cyber-cyan text-sm">${event.prize}</span>
+                            </div>
+                            <button onclick="openModal('${event.title}')" class="px-4 py-2 bg-cyber-dark border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-black font-mono text-xs uppercase font-bold rounded transition-all flex items-center gap-1.5">
+                                <span>Details</span>
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        function setCategoryFilter(cat) {
+            currentCategory = cat;
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if (btn.getAttribute('data-category') === cat) {
+                    btn.className = "category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan hover:bg-cyber-cyan hover:text-black transition-all";
+                } else {
+                    btn.className = "category-btn px-4 py-2 rounded-lg font-mono text-xs uppercase bg-cyber-dark/80 border border-slate-700 text-slate-300 hover:border-cyber-cyan hover:text-white transition-all";
+                }
+            });
+            renderEvents();
+        }
+
+        function setTimelineFilter(time) {
+            currentTimeline = time;
+            document.querySelectorAll('.timeline-btn').forEach(btn => {
+                if (btn.getAttribute('data-timeline') === time) {
+                    btn.className = "timeline-btn px-4 py-1.5 rounded-md font-mono text-xs font-semibold bg-cyber-cyan text-black transition-all";
+                } else {
+                    btn.className = "timeline-btn px-4 py-1.5 rounded-md font-mono text-xs font-semibold bg-cyber-dark/80 text-slate-300 border border-cyber-cyan/20 hover:border-cyber-cyan transition-all";
+                }
+            });
+            renderEvents();
+        }
+
+        function filterEvents() {
+            renderEvents();
+        }
+
+        // ==========================================
+        // 3. INTERACTIVE TERMINAL ENGINE
+        // ==========================================
+        const terminalInput = document.getElementById('terminal-input');
+        const terminalBody = document.getElementById('terminal-body');
+        const terminalForm = document.getElementById('terminal-form');
+
+        const commands = {
+            help: "Available Commands: <br>&bull; <b class='text-cyber-cyan'>events</b>: List all technical tracks & hackathons.<br>&bull; <b class='text-cyber-cyan'>status</b>: Display IIITD festival server ping & countdown status.<br>&bull; <b class='text-cyber-cyan'>hackathon</b>: Inspect HackIIITD v5.0 parameters.<br>&bull; <b class='text-cyber-cyan'>register</b>: Quick registration prompt.<br>&bull; <b class='text-cyber-cyan'>clear</b>: Wipe terminal buffer log.",
+            events: "Fetching ESYA Tracks...<br>1. Code Sorcery [HackIIITD, IPL Auction]<br>2. Mechanomancy [RoboWars]<br>3. Artificery [Worst UI, Tech Latent]<br>4. Quests [Cyber Escape Room]",
+            status: "SERVER: ONLINE [node-iiitd-01]<br>LATENCY: 14ms<br>LOCATION: IIIT Delhi Okhla Phase III<br>FEST STATUS: Countdown Active.",
+            hackathon: "HACKIIITD v5.0 :: Flagship Sprint<br>Prize: ₹2,50,000 | Venue: R&D Block<br>Status: Registrations open.",
+            register: "Initiating registration sequence... Select your event from the Schedule Grid below or open HackIIITD badge."
+        };
+
+        terminalForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const cmd = terminalInput.value.trim().toLowerCase();
+            if (cmd) {
+                processCommand(cmd);
+                terminalInput.value = '';
+            }
+        });
+
+        function executeQuickCmd(cmd) {
+            processCommand(cmd);
+        }
+
+        function processCommand(cmd) {
+            // Append input
+            const inputDiv = document.createElement('div');
+            inputDiv.innerHTML = `<span class="text-cyber-neonGreen">system@esya:~$</span> ${cmd}`;
+            terminalBody.appendChild(inputDiv);
+
+            // Append response
+            const responseDiv = document.createElement('div');
+            if (cmd === 'clear') {
+                terminalBody.innerHTML = '';
+                return;
+            } else if (commands[cmd]) {
+                responseDiv.innerHTML = `<span class="text-slate-300">${commands[cmd]}</span>`;
+            } else {
+                responseDiv.innerHTML = `<span class="text-red-400">Command not recognized: '${cmd}'. Type 'help' for available commands.</span>`;
+            }
+
+            terminalBody.appendChild(responseDiv);
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        // ==========================================
+        // 4. 3D TILT EFFECT ON HERO BADGE
+        // ==========================================
+        const tiltCard = document.getElementById('hero-3d-card');
+        if (tiltCard) {
+            tiltCard.addEventListener('mousemove', (e) => {
+                const rect = tiltCard.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const rotateX = ((y - centerY) / centerY) * -12;
+                const rotateY = ((x - centerX) / centerX) * 12;
+
+                tiltCard.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+            });
+
+            tiltCard.addEventListener('mouseleave', () => {
+                tiltCard.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+            });
+        }
+
+        // ==========================================
+        // 5. COUNTDOWN TIMER ENGINE
+        // ==========================================
+        const festDate = new Date();
+        festDate.setDate(festDate.getDate() + 18); // 18 days from now
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = festDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById('cd-days').innerText = String(days).padStart(2, '0');
+            document.getElementById('cd-hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('cd-mins').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('cd-secs').innerText = String(seconds).padStart(2, '0');
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // ==========================================
+        // 6. EVENT MODAL CONTROLLER
+        // ==========================================
+        const modal = document.getElementById('eventModal');
+        const modalContainer = document.getElementById('modalContainer');
+
+        function openModal(eventTitle) {
+            const eventObj = eventsData.find(e => e.title.toLowerCase() === eventTitle.toLowerCase()) || {
+                title: eventTitle,
+                categoryName: "Flagship Sprint",
+                desc: "HackIIITD v5.0 is IIIT Delhi's hackathon bringing together coders, designers, and domain experts to tackle modern software challenges.",
+                prize: "₹2,50,000",
+                team: "2 - 4 Members",
+                timelineName: "Day 1 - Day 2",
+                venue: "R&D Building, IIITD Campus"
+            };
+
+            document.getElementById('modalTitle').innerText = eventObj.title;
+            document.getElementById('modalCategory').innerText = eventObj.categoryName;
+            document.getElementById('modalDesc').innerText = eventObj.desc;
+            document.getElementById('modalPrize').innerText = eventObj.prize;
+            document.getElementById('modalTeam').innerText = eventObj.team;
+            document.getElementById('modalTime').innerText = eventObj.timelineName;
+            document.getElementById('modalVenue').innerText = eventObj.venue;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContainer.classList.remove('scale-95');
+                modalContainer.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            modal.classList.add('opacity-0');
+            modalContainer.classList.remove('scale-100');
+            modalContainer.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function confirmRegistration() {
+            closeModal();
+            const title = document.getElementById('modalTitle').innerText;
+            processCommand(`register ${title}`);
+            const termEl = document.getElementById('terminal');
+            if(termEl) termEl.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Close Modal on backdrop click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        // ==========================================
+        // 7. PARTICLES CANVAS BACKGROUND
+        // ==========================================
+        const canvas = document.getElementById('particlesCanvas');
+        const ctx = canvas.getContext('2d');
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        const particles = Array.from({ length: 45 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            size: Math.random() * 2 + 1,
+            speedX: (Math.random() - 0.5) * 0.4,
+            speedY: (Math.random() - 0.5) * 0.4,
+            color: Math.random() > 0.5 ? '#00f3ff' : '#ff0055'
+        }));
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                p.x += p.speedX;
+                p.y += p.speedY;
+
+                if (p.x < 0) p.x = canvas.width;
+                if (p.x > canvas.width) p.x = 0;
+                if (p.y < 0) p.y = canvas.height;
+                if (p.y > canvas.height) p.y = 0;
+
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = 0.4;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+
+            requestAnimationFrame(animateParticles);
+        }
+
+        // Initialize App
+        window.onload = function() {
+            renderEvents();
+            animateParticles();
+        };
+    </script>
+</body>
+</html>
